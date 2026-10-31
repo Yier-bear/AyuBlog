@@ -48,11 +48,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('blog-theme', newDark ? 'dark' : 'light');
   };
 
-  // 在客户端挂载完成前，为了防止闪屏，先隐藏内容
-  if (!mounted) {
-    return <div className="invisible">{children}</div>;
-  }
-
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       {children}

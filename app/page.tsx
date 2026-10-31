@@ -41,6 +41,11 @@ function extractFirstImage(content: string) {
   return htmlImage?.[1] || "";
 }
 
+function extractTextPreview(content: string, sentenceCount = 3) {
+  const text = content.replace(/```[\s\S]*?```/g, " ").replace(/!\[[^\]]*\]\([^)]+\)/g, " ").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/^#{1,6}\s+/gm, "").replace(/^>\s?/gm, "").replace(/[*_~`]/g, "").replace(/\s+/g, " ").trim();
+  return (text.match(/[^。！？!?；;]+[。！？!?；;]?/g) || [text]).slice(0, sentenceCount).join("").trim().slice(0, 140);
+}
+
 function readEntries(folder: string): Entry[] {
   const directory = path.join(process.cwd(), folder);
   if (!fs.existsSync(directory)) return [];
@@ -50,7 +55,7 @@ function readEntries(folder: string): Entry[] {
     return {
       slug: file.replace(/\.md$/, ""),
       title: String(data.title || "未命名记录"),
-      description: String(data.description || content.replace(/[#>*`]/g, "").trim().slice(0, 100)),
+      description: folder === "chatters" ? extractTextPreview(content) : String(data.description || extractTextPreview(content, 2)),
       date,
       formattedDate: formatDate(date),
       tags: folder === "posts" ? normalizeArticleCategories(data.tags) : (Array.isArray(data.tags) ? data.tags.map(String) : []),

@@ -16,7 +16,6 @@ type ChatterEntry = {
   slug: string;
   title: string;
   date: string;
-  tags: string[];
   mood: string;
   cover: string;
   content: string;
@@ -40,7 +39,6 @@ export default function ChatterPage() {
         slug,
         title: data.title || '',
         date: data.date || '未知时间',
-        tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
         mood: data.mood || '',
         cover: data.cover || '',
         content: content.replace(/^#+ .*\n/m, '') // 去除开头的 markdown 标题以优化截取显示

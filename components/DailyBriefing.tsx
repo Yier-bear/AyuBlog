@@ -9,7 +9,7 @@ import { terraReadingNotes } from '../data/terraReadingNotes';
 
 type ReadingState = { read: string[]; saved: string[]; topics: string[]; terraNotes: boolean };
 const initialState: ReadingState = { read: [], saved: [], topics: briefingTopics, terraNotes: briefingDisplay.showTerraNotes };
-const storageKey = 'xh-daily-letter-v1';
+const storageKey = 'ayulog-daily-letter-v1';
 const briefingCarouselDays = briefingDisplay.carouselDays;
 const categoryName = (category: string) => briefingChannels.find(channel => channel.id === category)?.name ?? category;
 

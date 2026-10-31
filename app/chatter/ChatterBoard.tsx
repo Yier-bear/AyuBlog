@@ -10,7 +10,6 @@ type Chatter = {
   slug: string;
   title: string;
   date: string;
-  tags: string[];
   mood?: string;
   cover?: string;
   content: string;
@@ -33,6 +32,11 @@ function formatDate(value: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+}
+
+function extractTextPreview(content: string, sentenceCount = 3) {
+  const text = content.replace(/```[\s\S]*?```/g, " ").replace(/!\[[^\]]*\]\([^)]+\)/g, " ").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/^#{1,6}\s+/gm, "").replace(/^>\s?/gm, "").replace(/[*_~`]/g, "").replace(/\s+/g, " ").trim();
+  return (text.match(/[^。！？!?；;]+[。！？!?；;]?/g) || [text]).slice(0, sentenceCount).join("").trim().slice(0, 140);
 }
 
 function NoteContent({ content }: { content: string }) {
@@ -114,7 +118,7 @@ export default function ChatterBoard({ chatters }: { chatters: Chatter[] }) {
                 <span className="absolute left-1/2 top-0 h-5 w-14 -translate-x-1/2 -translate-y-1/3 rotate-[-2deg] bg-white/55 shadow-sm" aria-hidden="true" />
                 <time className="font-mono text-[9px] tracking-[.08em] text-[#9a847e]" dateTime={chatter.date}>{formatDate(chatter.date)}</time>
                 <h2 className="mt-3 line-clamp-3 text-[15px] font-bold leading-6 text-[#493d3a] sm:text-base">{chatter.title}</h2>
-                <p className="mt-2 line-clamp-5 whitespace-pre-wrap text-[10px] leading-5 text-[#806e69] sm:text-[11px]">{chatter.content.replace(/^>\s?/gm, "")}</p>
+                <p className="mt-2 line-clamp-2 text-[10px] leading-5 text-[#806e69] sm:text-[11px]">{extractTextPreview(chatter.content)}</p>
                 <div className="absolute inset-x-4 bottom-3 flex items-center justify-between text-[9px] text-[#9a847e] sm:inset-x-5">
                   <span>{chatter.mood || "随手记"}</span>
                   <span className="inline-flex items-center gap-1 opacity-0 transition group-hover:opacity-100"><MessageCircle size={11} /> 展开</span>

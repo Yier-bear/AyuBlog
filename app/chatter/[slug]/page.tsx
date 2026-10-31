@@ -95,7 +95,6 @@ async function getChatterData(slug: string) {
     title: data.title || '碎片记录',
     date: data.date,
     mood: data.mood,
-    tags: data.tags && Array.isArray(data.tags) ? data.tags : [],
     cover: data.cover || siteConfig.defaultPostCover
   };
 }
@@ -171,15 +170,9 @@ export default async function ChatterDetail({ params }: { params: Promise<{ slug
 
                   {chatterData.mood && (
                     <div className="flex items-center gap-1.5 md:gap-2 text-pink-600 dark:text-pink-400 font-black bg-pink-500/5 dark:bg-pink-400/10 px-3 md:px-4 py-1.5 md:py-2 rounded-2xl text-xs md:text-sm border border-pink-500/10">
-                      ✨ 心情：{chatterData.mood}
+                      ✨ 状态：{chatterData.mood}
                     </div>
                   )}
-
-                  {chatterData.tags.map((tag: string) => (
-                    <div key={tag} className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-bold bg-slate-500/5 dark:bg-slate-400/10 px-3 md:px-4 py-1.5 md:py-2 rounded-2xl text-xs md:text-sm border border-slate-500/10">
-                      <span className="text-[10px] md:text-xs opacity-70">#</span> {tag}
-                    </div>
-                  ))}
                 </div>
               </header>
 

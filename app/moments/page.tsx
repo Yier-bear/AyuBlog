@@ -33,6 +33,7 @@ export default function MomentsPage() {
             date: data.date || '1970-01-01',
             location: data.location || '',
             images: data.images || [],
+            category: data.category === 'life' ? 'life' : 'work',
             content: content.trim()
           });
         });
@@ -49,13 +50,15 @@ export default function MomentsPage() {
   return (
     <div className="min-h-screen relative pb-10 flex flex-col">
       <Navbar />
-      <PageTransition className="flex-1 flex flex-col">
-        <MomentList
-          moments={allMoments}
-          authorName={siteConfig.authorName}
-          avatarUrl={siteConfig.avatarUrl}
-        />
-      </PageTransition>
+      <div className="flex flex-1 flex-col">
+        <PageTransition>
+          <MomentList
+            moments={allMoments}
+            authorName={siteConfig.authorName}
+            avatarUrl={siteConfig.avatarUrl}
+          />
+        </PageTransition>
+      </div>
     </div>
   );
 }

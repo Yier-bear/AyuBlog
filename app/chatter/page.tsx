@@ -8,22 +8,28 @@ import { siteConfig } from '@/siteConfig';
 
 
 export const metadata = {
-  title: "杂谈 | "+ siteConfig.title,
+  title: "产品手记 | "+ siteConfig.title,
   description: "日常碎片与灵感记录",
 };
 
+type ChatterEntry = {
+  slug: string;
+  title: string;
+  date: string;
+  tags: string[];
+  mood: string;
+  cover: string;
+  content: string;
+};
+
 export default function ChatterPage() {
-  // 注意：这里我们假设你的 md 文件放在根目录的 chatters 文件夹里
   const chattersDirectory = path.join(process.cwd(), 'chatters');
-  let chatters = [];
+  let chatters: ChatterEntry[] = [];
 
   try {
-    // 确保文件夹存在
-    if (!fs.existsSync(chattersDirectory)) {
-      fs.mkdirSync(chattersDirectory);
-    }
-
-    const fileNames = fs.readdirSync(chattersDirectory).filter(fileName => fileName.endsWith('.md'));
+    const fileNames = fs.existsSync(chattersDirectory)
+      ? fs.readdirSync(chattersDirectory).filter(fileName => fileName.endsWith('.md'))
+      : [];
 
     chatters = fileNames.map(fileName => {
       const slug = fileName.replace(/\.md$/, '');
@@ -34,7 +40,7 @@ export default function ChatterPage() {
         slug,
         title: data.title || '',
         date: data.date || '未知时间',
-        tags: data.tags || [],
+        tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
         mood: data.mood || '',
         cover: data.cover || '',
         content: content.replace(/^#+ .*\n/m, '') // 去除开头的 markdown 标题以优化截取显示

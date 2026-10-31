@@ -1,21 +1,26 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext({ isDark: true, toggleTheme: () => {} });
+const ThemeContext = createContext({ isDark: false, toggleTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // 默认设为 true，这样在读取到配置前，如果是夜间模式就不会闪烁
-  const [isDark, setIsDark] = useState(true);
+  // 默认使用与当前博客视觉一致的暖色亮色主题
+  const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // 标记组件已挂载，避免 hydration 报错
     setMounted(true);
 
-    // 从 localStorage 读取真实状态
+    // 新版首次加载时清除旧页面遗留的深色状态，恢复暖色亮色外观
+    const themeVersion = localStorage.getItem('ayu-theme-version');
+    const isFirstAyuThemeLoad = themeVersion !== 'light-default-v1';
     const savedTheme = localStorage.getItem('blog-theme');
-    // 如果没有记录，默认给深色模式（流萤飞舞）
-    const isDarkMode = savedTheme !== 'light';
+    const isDarkMode = !isFirstAyuThemeLoad && savedTheme === 'dark';
+    if (isFirstAyuThemeLoad) {
+      localStorage.setItem('blog-theme', 'light');
+      localStorage.setItem('ayu-theme-version', 'light-default-v1');
+    }
     setIsDark(isDarkMode);
 
     const root = document.documentElement;

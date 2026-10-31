@@ -2,73 +2,63 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { getArticleCategoryStyle } from "./articleCategories";
 
-export default function TimelineNode({ post, index }: { post: any, index: number }) {
-  // 判断是放在左边还是右边（偶数左，奇数右）
-  const isLeft = index % 2 === 0;
+type Post = {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string[];
+  cover: string;
+};
+
+function parsePostDate(value: string) {
+  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? new Date(0) : date;
+}
+
+function formatRelativeTime(date: Date) {
+  const difference = Date.now() - date.getTime();
+  const days = Math.floor(difference / 86_400_000);
+  if (days < 1) return "今天";
+  if (days < 30) return `${days} 天前`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+export default function TimelineNode({ post, index }: { post: Post; index: number }) {
+  const date = parsePostDate(post.date);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = `${date.getMonth() + 1}月`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`mb-12 flex justify-between items-center w-full ${isLeft ? 'md:flex-row-reverse' : 'flex-row'}`}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.025, 0.16) }}
+      className="relative grid grid-cols-[42px_minmax(0,1fr)] gap-[25px] max-sm:block max-sm:pl-5"
     >
-      {/* 留出对面的一半空白 */}
-      <div className="order-1 w-5/12 hidden md:block"></div>
+      <time className="pt-3 text-right font-mono text-[#917c76] max-sm:hidden" dateTime={post.date}>
+        <strong className="block text-sm font-semibold leading-none text-[#6f5c57]">{day}</strong>
+        <span className="mt-1 block text-[9px]">{month}</span>
+      </time>
+      <span className="absolute left-[50px] top-[17px] z-10 h-[9px] w-[9px] rounded-full border-[3px] border-[#fffaf4] bg-[#b77a80] shadow-[0_0_0_1px_rgba(183,122,128,.35)] max-sm:left-[1px]" />
 
-      {/* 中间的圆形节点 */}
-      <div className="z-20 flex items-center justify-center order-1 bg-white dark:bg-slate-900 shadow-xl w-6 h-6 rounded-full border-4 border-indigo-400 ring-4 ring-indigo-200/50 dark:ring-indigo-900/30 transition-colors duration-1000"></div>
-
-      {/* 卡片实体 */}
-      <Link href={`/posts/${post.slug}`} className="order-1 w-full md:w-5/12 group">
-        <div className="flex flex-col overflow-hidden rounded-3xl border border-[#eadfd5]/75 bg-[#fffdf9]/90 shadow-lg backdrop-blur-lg transition-all duration-500 hover:scale-[1.03] hover:bg-white hover:shadow-2xl">
-
-          {/* 上半部分：封面图 */}
-          <div className="relative h-40 w-full overflow-hidden bg-[#f4e8dc] sm:h-48 dark:bg-[#493d3a]">
-            <img
-              src={post.cover}
-              alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+      <Link
+        href={`/posts/${post.slug}`}
+        className="group block rounded-xl border border-[#eadfd5]/85 bg-[#fffdf9]/94 px-4 pb-3 pt-3.5 shadow-[0_3px_14px_rgba(118,76,69,.06)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[#d5babc] hover:bg-white hover:shadow-[0_8px_24px_rgba(118,76,69,.1)]"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-1.5">
+            {post.tags.slice(0, 3).map((tag) => <span key={tag} className={`rounded-md border px-2 py-0.5 text-[9px] font-semibold ${getArticleCategoryStyle(tag).chip}`}># {tag}</span>)}
           </div>
-
-          {/* 下半部分：文本信息 */}
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-indigo-600 dark:text-indigo-400 font-bold text-[11px] flex items-center gap-1 uppercase tracking-wider">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                {post.date}
-              </div>
-            </div>
-
-            <h3 className="mb-3 line-clamp-2 text-lg font-bold leading-tight text-[#493d3a] transition-colors group-hover:text-indigo-600">
-              {post.title}
-            </h3>
-
-            {/* 【核心新增】：文章标签展示 */}
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-black bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 border border-indigo-500/10 dark:border-indigo-400/10"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <p className="line-clamp-2 text-xs font-medium leading-relaxed text-[#806e69]">
-              {post.description}
-            </p>
-          </div>
-
+          <time className="shrink-0 font-mono text-[9px] text-[#a08881]" dateTime={post.date}>{formatRelativeTime(date)}</time>
         </div>
+        <h2 className="mt-2 text-[13px] font-semibold leading-[1.4] text-[#493d3a] transition group-hover:text-[#8b6469]">{post.title}</h2>
+        <p className="mt-1 line-clamp-2 text-[11px] leading-[1.55] text-[#806e69]">{post.description || "继续阅读这篇内容记录。"}</p>
       </Link>
-    </motion.div>
+    </motion.article>
   );
 }

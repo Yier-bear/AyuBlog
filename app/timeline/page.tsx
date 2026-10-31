@@ -5,17 +5,19 @@ import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import { siteConfig } from '../../siteConfig';
 import TimelineClient from '../../components/TimelineClient';
+import { ARTICLE_CATEGORIES, normalizeArticleCategories } from '../../components/articleCategories';
 // 🌟 1. 引入 ToastProvider 喵！
 import { ToastProvider } from '../../components/ToastProvider';
 
 export const metadata = {
-  title: "归档与探索 | " + siteConfig.title,
+  title: "文章 | " + siteConfig.title,
+  description: "按时间阅读全部文章、产品思考与实践记录。",
 };
 
 export default function Timeline() {
   const postsDirectory = path.join(process.cwd(), 'posts');
   let posts: any[] = [];
-  let tagCounts: Record<string, number> = {};
+  const tagCounts: Record<string, number> = Object.fromEntries(ARTICLE_CATEGORIES.map((category) => [category, 0]));
 
   try {
     if (fs.existsSync(postsDirectory)) {
@@ -28,7 +30,7 @@ export default function Timeline() {
         const fileContents = fs.readFileSync(fullPath, 'utf8');
         const { data } = matter(fileContents);
 
-        const postTags = data.tags && Array.isArray(data.tags) ? data.tags : ['未分类'];
+        const postTags = normalizeArticleCategories(data.tags);
 
         postTags.forEach(tag => {
           tagCounts[tag] = (tagCounts[tag] || 0) + 1;
@@ -53,9 +55,7 @@ export default function Timeline() {
     console.error("读取文章列表失败", e);
   }
 
-  const tagsArray = Object.keys(tagCounts)
-    .map(name => ({ name, count: tagCounts[name] }))
-    .sort((a, b) => b.count - a.count);
+  const tagsArray = ARTICLE_CATEGORIES.map((name) => ({ name, count: tagCounts[name] }));
 
   return (
     // 🌟 2. 在最外层用 ToastProvider 包裹整个页面

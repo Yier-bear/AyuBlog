@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { MapPin, MessageSquare, Clock, Sparkles, Search, ArrowDownAZ, ArrowUpZA, ChevronLeft, ChevronRight, Ghost } from 'lucide-react';
+import { MapPin, MessageSquare, Clock, Sparkles, Search, BriefcaseBusiness, Coffee, ChevronLeft, ChevronRight, Ghost, X } from 'lucide-react';
 import MomentComments from '../../components/MomentComments';
 
 function timeAgo(dateStr: string) {
@@ -18,8 +18,27 @@ function timeAgo(dateStr: string) {
 export default function MomentList({ moments, authorName, avatarUrl }: any) {
   const [openCommentId, setOpenCommentId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [activeCategory, setActiveCategory] = useState<'work' | 'life'>('work');
+  const [selectedMoment, setSelectedMoment] = useState<any | null>(null);
   const [lightbox, setLightbox] = useState<{ images: string[], index: number } | null>(null);
+
+  useEffect(() => {
+    if (!selectedMoment) return;
+    const previousOverflow = document.body.style.overflow;
+    const navbar = document.querySelector<HTMLElement>('header');
+    const previousNavbarVisibility = navbar?.style.visibility || '';
+    document.body.style.overflow = 'hidden';
+    if (navbar) navbar.style.visibility = 'hidden';
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !lightbox) setSelectedMoment(null);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      if (navbar) navbar.style.visibility = previousNavbarVisibility;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [selectedMoment, lightbox]);
 
   const processedMoments = useMemo(() => {
     let result = moments ? [...moments] : [];
@@ -32,13 +51,10 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
       );
     }
 
-    result.sort((a, b) => {
-      const timeA = new Date(a.date).getTime();
-      const timeB = new Date(b.date).getTime();
-      return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
-    });
+    result = result.filter(m => m.category === activeCategory);
+    result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return result;
-  }, [moments, searchQuery, sortOrder]);
+  }, [moments, searchQuery, activeCategory]);
 
   const nextImg = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -59,7 +75,7 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
     if (count === 1) {
       return (
         <div className="mt-4 md:mt-8 flex justify-start sm:justify-center w-full">
-          <div onClick={() => setLightbox({ images, index: 0 })} className="group max-w-[80%] cursor-zoom-in overflow-hidden rounded-xl border border-[#eadfd5]/75 bg-[#fffaf4]/60 shadow-lg sm:max-w-[280px] md:rounded-2xl md:shadow-xl dark:border-[#eadfd5]/15 dark:bg-[#493d3a]/55">
+          <div onClick={(event) => { event.stopPropagation(); setLightbox({ images, index: 0 }); }} className="group max-w-[80%] cursor-zoom-in overflow-hidden rounded-xl border border-[#eadfd5]/75 bg-[#fffaf4]/60 shadow-lg sm:max-w-[280px] md:rounded-2xl md:shadow-xl dark:border-[#eadfd5]/15 dark:bg-[#493d3a]/55">
             <img src={images[0]} alt="moment" className="w-full h-auto max-h-[300px] md:max-h-[400px] object-contain group-hover:scale-105 transition-transform duration-500" />
           </div>
         </div>
@@ -75,7 +91,7 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
           {images.slice(0, 9).map((src, idx) => {
             const isLastVisible = idx === 8 && count > 9;
             return (
-              <div key={idx} onClick={() => setLightbox({ images, index: idx })} className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-lg border border-[#eadfd5]/75 bg-[#f4e8dc]/55 md:rounded-xl dark:border-[#eadfd5]/15 dark:bg-[#493d3a]/55">
+              <div key={idx} onClick={(event) => { event.stopPropagation(); setLightbox({ images, index: idx }); }} className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-lg border border-[#eadfd5]/75 bg-[#f4e8dc]/55 md:rounded-xl dark:border-[#eadfd5]/15 dark:bg-[#493d3a]/55">
                 <img src={src} alt="moment" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 {isLastVisible && (
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white backdrop-blur-[2px]">
@@ -98,7 +114,17 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.4, type: 'spring', stiffness: 100 }}
-      className="group relative flex w-full flex-col overflow-hidden rounded-3xl border border-[#eadfd5]/75 bg-[#fffdf9]/90 p-5 shadow-lg backdrop-blur-xl transition-shadow hover:shadow-2xl md:rounded-[40px] md:p-10 md:shadow-xl"
+      onClick={() => setSelectedMoment(moment)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setSelectedMoment(moment);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label="放大查看这条说说"
+      className="group relative flex w-full cursor-pointer flex-col overflow-hidden rounded-3xl border border-[#eadfd5]/75 bg-[#fffdf9]/90 p-5 shadow-lg backdrop-blur-xl transition-shadow hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#9eb3bc]/60 md:rounded-[40px] md:p-10 md:shadow-xl"
     >
       <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8 pb-4 md:pb-6 border-b border-slate-200/50 dark:border-slate-700/50 relative">
         <div className="w-10 h-10 md:w-14 md:h-14 shrink-0 rounded-xl md:rounded-2xl overflow-hidden shadow-sm md:shadow-md border-2 border-white dark:border-slate-700">
@@ -110,7 +136,7 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
         </div>
       </div>
 
-      <p className="whitespace-pre-wrap break-words text-[14px] font-medium leading-relaxed text-[#493d3a] md:text-[16px]">{moment.content}</p>
+      <p className="whitespace-pre-wrap break-words text-[12px] font-medium leading-[1.75] text-[#493d3a] md:text-[14px]">{moment.content}</p>
 
       {renderImages(moment.images)}
 
@@ -124,14 +150,14 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
             </span>
           )}
         </div>
-        <button onClick={() => setOpenCommentId(openCommentId === moment.id ? null : moment.id)} className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm transition-all md:h-10 md:w-10 ${openCommentId === moment.id ? 'rotate-12 bg-indigo-500 text-white shadow-indigo-500/30' : 'bg-[#fffaf4] text-[#917c76] hover:bg-[#f8eee5] hover:text-indigo-500'}`}>
+        <button type="button" aria-label="展开评论" onClick={(event) => { event.stopPropagation(); setOpenCommentId(openCommentId === moment.id ? null : moment.id); }} className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm transition-all md:h-10 md:w-10 ${openCommentId === moment.id ? 'rotate-12 bg-indigo-500 text-white shadow-indigo-500/30' : 'bg-[#fffaf4] text-[#917c76] hover:bg-[#f8eee5] hover:text-indigo-500'}`}>
           <MessageSquare size={14} className="md:w-4 md:h-4" />
         </button>
       </div>
 
       <AnimatePresence>
         {openCommentId === moment.id && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, marginTop: 16 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+          <motion.div onClick={(event) => event.stopPropagation()} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, marginTop: 16 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="relative rounded-2xl border border-[#eadfd5]/75 bg-[#fffaf4]/88 p-4 shadow-inner md:rounded-3xl md:p-6">
               <div className="absolute -top-2 right-6 h-4 w-4 rotate-45 border-l border-t border-[#eadfd5]/75 bg-[#fffaf4] md:right-8"></div>
               <MomentComments id={`/moments/${moment.id}`} />
@@ -158,12 +184,12 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
           <input type="text" placeholder="搜寻被遗忘的记忆..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="relative z-10 h-9 w-full rounded-xl border border-white/70 bg-white/55 px-3 pl-9 text-sm text-[#493d3a] shadow-sm backdrop-blur-xl outline-none transition focus:ring-2 focus:ring-[#78909d]/30 placeholder:text-[#a28f89]" />
         </div>
 
-        <div className="relative z-10 flex rounded-xl border border-[#eadfd5]/75 bg-[#fffaf4]/88 p-1 shadow-sm md:rounded-2xl md:p-1.5">
-          <button onClick={() => setSortOrder('desc')} className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[9px] font-semibold transition-all duration-300 ${sortOrder === 'desc' ? 'bg-indigo-500 text-white shadow-md scale-105' : 'text-slate-500 hover:text-indigo-500'}`}>
-            <ArrowDownAZ size={12} className="md:w-3.5 md:h-3.5"/> 最新
+        <div className="relative z-10 flex rounded-xl border border-[#eadfd5]/75 bg-[#fffaf4]/88 p-1 shadow-sm md:rounded-2xl md:p-1.5" aria-label="说说场景筛选">
+          <button type="button" onClick={() => setActiveCategory('work')} className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[9px] font-semibold transition-all duration-300 ${activeCategory === 'work' ? 'bg-[#718f9b] text-white shadow-md' : 'text-[#6f7f86] hover:bg-[#e8f0f3]'}`}>
+            <BriefcaseBusiness size={12} className="md:h-3.5 md:w-3.5"/> Work
           </button>
-          <button onClick={() => setSortOrder('asc')} className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[9px] font-semibold transition-all duration-300 ${sortOrder === 'asc' ? 'bg-indigo-500 text-white shadow-md scale-105' : 'text-slate-500 hover:text-indigo-500'}`}>
-            <ArrowUpZA size={12} className="md:w-3.5 md:h-3.5"/> 最早
+          <button type="button" onClick={() => setActiveCategory('life')} className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[9px] font-semibold transition-all duration-300 ${activeCategory === 'life' ? 'bg-[#b98179] text-white shadow-md' : 'text-[#8d6d68] hover:bg-[#f7e9e5]'}`}>
+            <Coffee size={12} className="md:h-3.5 md:w-3.5"/> Life
           </button>
         </div>
       </div>
@@ -189,12 +215,78 @@ export default function MomentList({ moments, authorName, avatarUrl }: any) {
                 <div className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full animate-pulse"></div>
                 <Ghost size={32} className="md:w-12 md:h-12 text-indigo-500 relative z-10" strokeWidth={1.5} />
               </div>
-              <h2 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight">{searchQuery ? "没找到相关记忆" : "朋友圈空空如也"}</h2>
-              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-lg leading-relaxed px-2 md:px-4">{searchQuery ? `尝试精简你的搜索词，或者换个心情再次出发。` : `还没有记录下任何生活碎片呢。`}</p>
+              <h2 className="text-xl md:text-3xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight">{searchQuery ? "没找到相关记忆" : `${activeCategory === 'work' ? 'Work' : 'Life'} 还没有记录`}</h2>
+              <p className="text-slate-500 dark:text-slate-400 font-medium text-sm md:text-lg leading-relaxed px-2 md:px-4">{searchQuery ? `尝试精简你的搜索词，或者换个场景看看。` : `这一侧的瞬间还在慢慢积累。`}</p>
             </motion.div>
           </div>
         )}
       </LayoutGroup>
+
+      <AnimatePresence>
+        {selectedMoment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9998] flex items-center justify-center bg-[#493d3a]/45 p-4 backdrop-blur-sm sm:p-6"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setSelectedMoment(null);
+            }}
+          >
+            <motion.section
+              role="dialog"
+              aria-modal="true"
+              aria-label="说说详情"
+              initial={{ opacity: 0, y: 36, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 28, scale: 0.98 }}
+              transition={{ duration: 0.24 }}
+              className="relative max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-[24px] border border-white/80 bg-[#fffdf9] p-5 shadow-[0_28px_90px_rgba(63,42,38,.28)] sm:max-h-[calc(100vh-3rem)] sm:rounded-[32px] sm:p-8"
+            >
+              <button type="button" onClick={() => setSelectedMoment(null)} className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-[#fffaf4] text-[#806e69] shadow-sm transition hover:bg-white hover:text-[#493d3a]" aria-label="关闭说说详情">
+                <X size={16} />
+              </button>
+
+              <header className="flex items-center gap-3 border-b border-dashed border-[#d9c2bd]/70 pb-5 pr-10">
+                <img src={avatarUrl} alt="" className="h-11 w-11 rounded-xl border-2 border-white object-cover shadow-sm" />
+                <div>
+                  <h2 className="text-base font-bold text-[#576b95]">{authorName}</h2>
+                  <div className="mt-1 flex items-center gap-1.5 text-[10px] text-[#9a847e]"><Clock size={11} /> {timeAgo(selectedMoment.date)}</div>
+                </div>
+              </header>
+
+              <p className="whitespace-pre-wrap break-words py-6 text-[16px] font-medium leading-8 text-[#493d3a] sm:text-[18px] sm:leading-9">{selectedMoment.content}</p>
+
+              {selectedMoment.images?.length > 0 && (
+                <div className={`grid gap-2 ${selectedMoment.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                  {selectedMoment.images.slice(0, 9).map((src: string, index: number) => (
+                    <button key={src} type="button" onClick={() => setLightbox({ images: selectedMoment.images, index })} className={`group relative overflow-hidden rounded-xl bg-[#f4e8dc]/55 ${selectedMoment.images.length === 1 ? 'mx-auto max-w-sm' : 'aspect-square'}`} aria-label={`查看第 ${index + 1} 张图片`}>
+                      <img src={src} alt="" className={`h-full w-full transition duration-500 group-hover:scale-105 ${selectedMoment.images.length === 1 ? 'max-h-[420px] object-contain' : 'object-cover'}`} />
+                      {index === 8 && selectedMoment.images.length > 9 && <span className="absolute inset-0 grid place-items-center bg-black/55 text-lg font-bold text-white">+{selectedMoment.images.length - 9}</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {selectedMoment.location && (
+                <div className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#bfd0d7] bg-[#eef5f7] px-3 py-1.5 text-[10px] font-semibold text-[#647f89]">
+                  <MapPin size={11} /> {selectedMoment.location}
+                </div>
+              )}
+
+              <section className="mt-7 border-t border-dashed border-[#d9c2bd]/75 pt-6" aria-label="说说评论与回复">
+                <div className="flex items-center gap-2">
+                  <MessageSquare size={15} className="text-[#718f9b]" />
+                  <h3 className="text-sm font-semibold text-[#493d3a]">评论与回复</h3>
+                </div>
+                <div className="mt-2 rounded-2xl border border-[#eadfd5]/75 bg-[#fffaf4]/75 p-3 sm:p-4">
+                  <MomentComments id={`/moments/${selectedMoment.id}`} />
+                </div>
+              </section>
+            </motion.section>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {lightbox && (

@@ -8,9 +8,10 @@ import Gitalk from 'gitalk';
 // 🌟 引入全局配置，读取你的 GitHub OAuth 凭证
 import { siteConfig } from '../siteConfig'; // 如果路径报错，请检查层级是否需要改成 '../../siteConfig'
 
-export default function Comments() {
+export default function Comments({ compact = false, pageId }: { compact?: boolean; pageId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const commentId = (pageId || pathname.replace(/\/$/, '') || '/').substring(0, 49);
   const isConfigured = Boolean(siteConfig.gitalkConfig.clientID && siteConfig.gitalkConfig.repo && siteConfig.gitalkConfig.owner);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function Comments() {
       // 👇 指向我们自己的同源 API，彻底告别跨域和第三方拦截！
       proxy: '/api/github',
 
-      id: (pathname.replace(/\/$/, '') || '/').substring(0, 49),
+      id: commentId,
       distractionFreeMode: false,
     });
 
@@ -43,14 +44,14 @@ export default function Comments() {
       window.history.replaceState({}, document.title, url.toString());
     }
 
-  }, [pathname, isConfigured]);
+  }, [commentId, isConfigured]);
 
   if (!isConfigured) {
-    return <div className="ayu-glass mt-8 rounded-[22px] px-5 py-6 text-center text-xs leading-6 text-[#846f69]">友链申请评论区将在站点 GitHub 评论配置完成后开放。</div>;
+    return <div className={`${compact ? "mt-4" : "mt-8"} rounded-xl border border-[#eadfd5]/80 bg-[#fffaf4]/80 px-5 py-5 text-center text-[11px] leading-6 text-[#846f69]`}>评论区将在站点 GitHub 评论配置完成后开放。</div>;
   }
 
   return (
-    <div className="w-full mt-16 relative">
+    <div className={`relative w-full ${compact ? "mt-4" : "mt-16"}`}>
       {/* 🌟 视觉特效：底部环境光晕（保留氛围感） */}
       <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-indigo-500/10 dark:bg-indigo-500/20 blur-3xl rounded-full pointer-events-none z-0"></div>
 

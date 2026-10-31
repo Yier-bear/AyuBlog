@@ -8,6 +8,7 @@ import HomeHero from "../components/HomeHero";
 import { siteConfig } from "../siteConfig";
 import { friendsData } from "../data/friends";
 import { latestAiDailyReport } from "../data/aiDaily";
+import { getArticleCategoryStyle, normalizeArticleCategories } from "../components/articleCategories";
 
 type Entry = {
   slug: string;
@@ -33,6 +34,13 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(date);
 }
 
+function extractFirstImage(content: string) {
+  const markdownImage = content.match(/!\[[^\]]*\]\(([^\s)]+)(?:\s+["'][^"']*["'])?\)/);
+  if (markdownImage) return markdownImage[1];
+  const htmlImage = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return htmlImage?.[1] || "";
+}
+
 function readEntries(folder: string): Entry[] {
   const directory = path.join(process.cwd(), folder);
   if (!fs.existsSync(directory)) return [];
@@ -45,8 +53,8 @@ function readEntries(folder: string): Entry[] {
       description: String(data.description || content.replace(/[#>*`]/g, "").trim().slice(0, 100)),
       date,
       formattedDate: formatDate(date),
-      tags: Array.isArray(data.tags) ? data.tags : [],
-      cover: String(data.cover || siteConfig.defaultPostCover),
+      tags: folder === "posts" ? normalizeArticleCategories(data.tags) : (Array.isArray(data.tags) ? data.tags.map(String) : []),
+      cover: String(data.cover || extractFirstImage(content) || siteConfig.defaultPostCover),
     };
   }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
@@ -116,14 +124,14 @@ export default function Home() {
 
             <section className="ayu-glass rounded-[24px] p-3.5">
               <p className="ayu-kicker">个人标签</p>
-              <div className="mt-2.5 flex flex-wrap gap-1.5">{["AI 产品", "Agent", "体验设计", "摄影", "手帐"].map((tag) => <span key={tag} className="rounded-lg bg-white/65 px-2 py-1 text-[8px] text-[#806f6b]"># {tag}</span>)}</div>
+              <div className="mt-2.5 flex flex-wrap gap-1.5">{["AI 产品", "Agent", "Design", "求职"].map((tag) => <span key={tag} className={`rounded-lg border px-2 py-1 text-[8px] ${getArticleCategoryStyle(tag).chip}`}># {tag}</span>)}</div>
             </section>
           </aside>
 
           <section className="min-w-0 space-y-4">
             <section className="ayu-glass rounded-[28px] p-6 sm:p-7">
               <div className="flex items-end justify-between gap-4"><div><p className="ayu-kicker">LATEST ARTICLES</p><h2 className="mt-2 text-2xl font-bold text-[#493d3a]">最新文章</h2></div><Link href="/timeline" className="text-[9px] text-[#ad6069]">全部文章 →</Link></div>
-              <div className="mt-5 divide-y divide-dashed divide-[#a9746a]/15">{(posts.length ? posts.slice(0, 3) : [{ slug: "none", title: "第一篇文章正在路上", description: "记录问题、判断和产品实践。", date: "", formattedDate: "SOON", tags: ["AI 产品"], cover: siteConfig.defaultPostCover }]).map((post) => <Link key={post.slug} href={post.slug === "none" ? "/timeline" : `/posts/${post.slug}`} className="group grid gap-4 py-4 sm:grid-cols-[minmax(0,1fr)_132px] sm:items-center"><div className="min-w-0"><h3 className="line-clamp-2 text-sm font-bold leading-6 text-[#493d3a] transition group-hover:text-[#856d72]">{post.title}</h3><p className="mt-1.5 line-clamp-2 text-[10px] leading-5 text-[#8a7771]">{post.description}</p><div className="mt-2.5 flex flex-wrap items-center gap-2 text-[8px] text-[#9b8580]"><time className="font-mono">{post.formattedDate}</time>{post.tags.slice(0, 2).map((tag) => <span key={tag} className="rounded-full bg-[#eef3f4] px-2 py-1 text-[#6f8792]"># {tag}</span>)}</div></div><div className="relative order-first aspect-[16/9] overflow-hidden rounded-2xl bg-[#f1e7e2] sm:order-last"><img src={post.cover} alt={`${post.title}的文章封面`} className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" /><div className="absolute inset-0 bg-gradient-to-tr from-[#e8cdd2]/15 to-transparent" /></div></Link>)}</div>
+              <div className="mt-5 divide-y divide-dashed divide-[#a9746a]/15">{(posts.length ? posts.slice(0, 3) : [{ slug: "none", title: "第一篇文章正在路上", description: "记录问题、判断和产品实践。", date: "", formattedDate: "SOON", tags: ["AI 产品"], cover: siteConfig.defaultPostCover }]).map((post) => <Link key={post.slug} href={post.slug === "none" ? "/timeline" : `/posts/${post.slug}`} className="group grid gap-4 py-4 sm:grid-cols-[minmax(0,1fr)_132px] sm:items-center"><div className="min-w-0"><h3 className="line-clamp-2 text-sm font-bold leading-6 text-[#493d3a] transition group-hover:text-[#856d72]">{post.title}</h3><p className="mt-1.5 line-clamp-2 text-[10px] leading-5 text-[#8a7771]">{post.description}</p><div className="mt-2.5 flex flex-wrap items-center gap-2 text-[8px] text-[#9b8580]"><time className="font-mono">{post.formattedDate}</time>{post.tags.slice(0, 2).map((tag) => <span key={tag} className={`rounded-full border px-2 py-1 ${getArticleCategoryStyle(tag).chip}`}># {tag}</span>)}</div></div><div className="relative order-first aspect-[16/9] overflow-hidden rounded-2xl bg-[#f1e7e2] sm:order-last"><img src={post.cover} alt={`${post.title}的文章封面`} className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" /><div className="absolute inset-0 bg-gradient-to-tr from-[#e8cdd2]/15 to-transparent" /></div></Link>)}</div>
             </section>
 
             <section className="ayu-glass rounded-[28px] p-6 sm:p-7">

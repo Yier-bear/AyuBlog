@@ -1,5 +1,6 @@
 import "katex/dist/katex.min.css";
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import { Geist, Geist_Mono, Noto_Serif_SC } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/ThemeProvider";
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} ${notoSerif.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full overflow-x-hidden font-serif text-[#493d3a]">
+      <body className="min-h-full overflow-x-hidden font-serif text-[#493d3a]" style={{ "--ayu-bg-image": `url('${siteConfig.bgImages[0]}')` } as CSSProperties}>
         <ThemeProvider>
           <SplashScreen />
           <div className="ayu-ambient" aria-hidden="true"><span className="ayu-blob ayu-blob-a" /><span className="ayu-blob ayu-blob-b" /><span className="ayu-blob ayu-blob-c" /></div>

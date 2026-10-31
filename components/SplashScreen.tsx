@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../siteConfig';
+import { publicPath } from '../lib/publicPath';
 
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
@@ -45,7 +46,7 @@ export default function SplashScreen() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100000] flex flex-col items-center justify-center overflow-hidden bg-[#f9ede7]"
         >
-          <div className="absolute inset-0 bg-[url('/ayu-home-bg.jpg')] bg-cover bg-center opacity-20" />
+          <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url('${publicPath("/ayu-home-bg.jpg")}')` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-[#f4d4d2]/85 via-[#fbefd9]/90 to-[#e8ecdf]/85 backdrop-blur-xl" />
           <div className="relative z-10 flex flex-col items-center rounded-[36px] border border-white/75 bg-white/35 px-12 py-10 shadow-[0_28px_80px_rgba(118,76,69,.18)] backdrop-blur-2xl">
             <div className="relative mb-7 h-28 w-28">

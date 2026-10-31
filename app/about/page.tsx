@@ -19,6 +19,7 @@ import Navbar from '../../components/Navbar';
 import PageTransition from '../../components/PageTransition';
 import AboutClient from '../../components/AboutClient';
 import { Suspense } from 'react';
+import { publicPath, rewritePublicPaths } from '../../lib/publicPath';
 
 function getDirActivities(dirName: string, typeLabel: '文章' | '杂谈' | '说说', linkPrefix: string) {
   const dirPath = path.join(process.cwd(), dirName);
@@ -42,7 +43,7 @@ function getDirActivities(dirName: string, typeLabel: '文章' | '杂谈' | '说
 export default async function AboutPage() {
   const fullPath = path.join(process.cwd(), 'app', 'about', 'about.md');
   let contentHtml = "博主很懒，还没有写自我介绍哦...";
-  const coverImage = "/ayu-about-hero.jpg";
+  const coverImage = publicPath("/ayu-about-hero.jpg");
 
   try {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
@@ -85,7 +86,7 @@ export default async function AboutPage() {
       .use(rehypeStringify, { allowDangerousHtml: true })
       .process(content);
 
-    contentHtml = processedContent.toString();
+    contentHtml = rewritePublicPaths(processedContent.toString());
   } catch (e) {
     console.error("读取 about.md 失败", e);
   }

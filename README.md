@@ -39,9 +39,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 The public blog is automatically built and deployed by `.github/workflows/deploy-pages.yml` whenever `main` is updated.
 
-- Custom domain: <https://www.xinghuisama.top/>
-- GitHub Pages fallback: <https://yier-bear.github.io/AyuBlog/>
+- GitHub Pages: <https://yier-bear.github.io/AyuBlog/>
 - Deployment source: GitHub Actions
-- Static output directory: `.next-pages`
+- Static output directory: `out`
 
 The Pages build exports the public blog, posts, product notes, moments, photo wall, projects, timeline, and other static pages. Server-only routes under `app/api` are intentionally excluded from the Pages artifact; they remain available for a future Node.js server deployment.

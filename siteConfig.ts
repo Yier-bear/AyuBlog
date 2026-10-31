@@ -1,9 +1,11 @@
 // siteConfig.ts - 你的全站“控制中心”
 
+import { publicPath } from "./lib/publicPath";
+
 export const siteConfig = {
   // 1. 网站标题与博主信息
   title: "ayu’s blog · AI 产品与实践",
-  faviconUrl: "/ayu-avatar.jpg",
+  faviconUrl: publicPath("/ayu-avatar.jpg"),
   authorName: "ayu",
   bio: "记录 AI 产品设计、Agent 工作流、用户体验与从想法到原型的真实实践。",
 
@@ -11,19 +13,19 @@ export const siteConfig = {
   navSuffix: "’s",
   navAfter: "blog",
 
-  avatarUrl: "/ayu-avatar.jpg",
+  avatarUrl: publicPath("/ayu-avatar.jpg"),
 
   // 浅粉、米色、鼠尾草绿的动态渐变背景
   useGradient: true,
   themeColors: ["#f1c4c6", "#faefd9", "#efd8d1", "#e5ecdf"],
-  bgImages: ["/ayu-home-bg.jpg"],
+  bgImages: [publicPath("/ayu-home-bg.jpg")],
 
   // 壁纸分组保留给后续控制台配置
-  bgGroups: [{"id": "default", "name": "ayu 首页", "images": ["/ayu-home-bg.jpg"]}],
+  bgGroups: [{"id": "default", "name": "ayu 首页", "images": [publicPath("/ayu-home-bg.jpg")]}],
   activeBgGroup: "default",
 
-  defaultPostCover: "/ayu-home-bg.jpg",
-  photoWallImage: "/ayu-home-bg.jpg",
+  defaultPostCover: publicPath("/ayu-home-bg.jpg"),
+  photoWallImage: publicPath("/ayu-home-bg.jpg"),
   social: {
     github: "https://github.com/Yier-bear",
     gitee: "",
@@ -60,6 +62,6 @@ export const siteConfig = {
     maxOutputTokens: 150,
     temperature: 0.85,
   },
-  friendLinkApplyFormat: "名称：ayu’s blog\n简介：记录 AI 产品、创造与生活\n链接：待补充\n头像：/ayu-avatar.jpg",
+  friendLinkApplyFormat: "名称：ayu’s blog\n简介：记录 AI 产品、创造与生活\n链接：https://yier-bear.github.io/AyuBlog/\n头像：https://yier-bear.github.io/AyuBlog/ayu-avatar.jpg",
   enableLevelSystem: true,
 };

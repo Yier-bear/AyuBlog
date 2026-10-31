@@ -22,6 +22,7 @@ import { siteConfig } from '../../../siteConfig';
 import ClientSocials from '../../../components/ClientSocials';
 import BackButton from '../../../components/BackButton';
 import Comments from '../../../components/Comments';
+import { rewritePublicPaths } from '../../../lib/publicPath';
 
 export async function generateStaticParams() {
   const chattersDirectory = path.join(process.cwd(), 'chatters');
@@ -91,7 +92,7 @@ async function getChatterData(slug: string) {
 
   return {
     slug,
-    contentHtml: processedContent.toString(),
+    contentHtml: rewritePublicPaths(processedContent.toString()),
     title: data.title || '碎片记录',
     date: data.date,
     mood: data.mood,

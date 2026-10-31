@@ -20,6 +20,7 @@ import Comments from "../../../components/Comments";
 import PostLikeButton from "../../../components/PostLikeButton";
 import { siteConfig } from "../../../siteConfig";
 import { getArticleCategoryStyle, normalizeArticleCategories } from "../../../components/articleCategories";
+import { rewritePublicPaths } from "../../../lib/publicPath";
 
 type PostSummary = {
   slug: string;
@@ -118,7 +119,7 @@ async function getPostData(slug: string) {
 
   return {
     slug,
-    contentHtml: processedContent.toString(),
+    contentHtml: rewritePublicPaths(processedContent.toString()),
     toc: extractToc(content),
     title: String(data.title || "无标题"),
     date: String(data.date || "1970-01-01"),

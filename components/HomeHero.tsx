@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { publicPath } from "../lib/publicPath";
 
 type SearchPost = { slug: string; title: string; description: string };
 
@@ -34,12 +35,12 @@ export default function HomeHero({ posts }: { posts: SearchPost[] }) {
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (results[0]) window.location.href = `/posts/${results[0].slug}`;
+    if (results[0]) window.location.href = publicPath(`/posts/${results[0].slug}/`);
   };
 
   return (
     <header className="ayu-home-cover relative flex min-h-[560px] w-full items-center justify-center overflow-hidden sm:min-h-[660px]">
-      <img src="/ayu-home-bg.jpg" alt="ayu’s blog 首页封面" className="absolute inset-0 h-full w-full object-cover object-center" />
+      <img src={publicPath("/ayu-home-bg.jpg")} alt="ayu’s blog 首页封面" className="absolute inset-0 h-full w-full object-cover object-center" />
       <div className="absolute inset-0 bg-[#493532]/28" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_5%,rgba(47,31,29,.32)_100%)]" />
 

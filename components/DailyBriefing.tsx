@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArrowUpRight, Bookmark, Check, ChevronDown, ChevronLeft, ChevronRight, History, Minus, Pause, Play, Plus, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { briefingAsOfDate, briefingCovers, briefingDisplay, briefingChannels, briefingIssues as publishedIssues, briefingTopics, type BriefingItem } from '../data/dailyBriefing';
 import { beijingCalendarDate, getBriefingWindow, stepBriefingDate } from '../lib/briefingWindow';
+import { publicPath } from '../lib/publicPath';
 
 import { terraReadingNotes } from '../data/terraReadingNotes';
 
@@ -31,8 +32,9 @@ export default function DailyBriefing() {
   const issue = briefingIssues[issueIndex];
   const briefingEdition = issue?.edition ?? { date: windowDate, weekday: '', label: '每日选刊', notice: `最近 ${briefingDisplay.archiveDays} 天暂无可用选刊，请稍后再来。` };
   const briefingItems = (issue?.items ?? []).filter(item => briefingChannels.some(channel => channel.id === item.category));
-  const briefingCover = briefingCovers[briefingEdition.date] ?? { src: '/images/briefing-default.svg', alt: '每日选刊默认封面' };
-  const coverSources = [...new Set([briefingCover.src, ...carouselIssues.map(entry => briefingCovers[entry.edition.date]?.src ?? '/images/briefing-default.svg')])];
+  const briefingCoverData = briefingCovers[briefingEdition.date] ?? { src: '/images/briefing-default.svg', alt: '每日选刊默认封面' };
+  const briefingCover = { ...briefingCoverData, src: publicPath(briefingCoverData.src) };
+  const coverSources = [...new Set([briefingCover.src, ...carouselIssues.map(entry => publicPath(briefingCovers[entry.edition.date]?.src ?? '/images/briefing-default.svg'))])];
   const isLatest = issueIndex === 0;
   const carouselIndex = carouselDates.indexOf(briefingEdition.date);
   const [reading, setReading] = useState<ReadingState>(initialState);

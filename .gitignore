@@ -46,3 +46,6 @@ next-env.d.ts
 *.connection.json
 __pycache__/
 *.py[cod]
+
+# 本地评论运行时数据
+/data/comments.json

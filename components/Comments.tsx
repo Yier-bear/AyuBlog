@@ -7,6 +7,7 @@ import Gitalk from 'gitalk';
 
 // 🌟 引入全局配置，读取你的 GitHub OAuth 凭证
 import { siteConfig } from '../siteConfig'; // 如果路径报错，请检查层级是否需要改成 '../../siteConfig'
+import LocalComments from './LocalComments';
 
 export default function Comments({ compact = false, pageId }: { compact?: boolean; pageId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +48,8 @@ export default function Comments({ compact = false, pageId }: { compact?: boolea
   }, [commentId, isConfigured]);
 
   if (!isConfigured) {
-    return <div className={`${compact ? "mt-4" : "mt-8"} rounded-xl border border-[#eadfd5]/80 bg-[#fffaf4]/80 px-5 py-5 text-center text-[11px] leading-6 text-[#846f69]`}>评论区将在站点 GitHub 评论配置完成后开放。</div>;
+    // Gitalk 未配置时启用本地评论区，可直接评论与回复
+    return <LocalComments pageId={commentId} compact={compact} />;
   }
 
   return (

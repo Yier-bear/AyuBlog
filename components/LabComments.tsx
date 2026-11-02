@@ -6,20 +6,22 @@ import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
 
 import { siteConfig } from '../siteConfig';
+import LocalComments from './LocalComments';
 
 // 🌟 专门为炼金实验室定制的 Gitalk 组件，不影响原有的 Comments.tsx
 export default function LabComments({ pageId }: { pageId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const isConfigured = Boolean(siteConfig.gitalkConfig.clientID && siteConfig.gitalkConfig.repo && siteConfig.gitalkConfig.owner);
+
+  // 优先使用传入的 pageId (如 workshop-2026-05)
+  const finalId = (pageId || pathname.replace(/\/$/, '') || '/').substring(0, 49);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isConfigured) return;
 
     // 清空之前的评论区，防止切换月份时叠加
     containerRef.current.innerHTML = '';
-
-    // 优先使用传入的 pageId (如 workshop-2026-05)
-    const finalId = (pageId || pathname.replace(/\/$/, '') || '/').substring(0, 49);
 
     const gitalk = new Gitalk({
       clientID: siteConfig.gitalkConfig.clientID,
@@ -41,7 +43,16 @@ export default function LabComments({ pageId }: { pageId?: string }) {
       window.history.replaceState({}, document.title, url.toString());
     }
 
-  }, [pathname, pageId]);
+  }, [pathname, pageId, finalId, isConfigured]);
+
+  // Gitalk 未配置时启用本地评论区，可直接评论与回复
+  if (!isConfigured) {
+    return (
+      <div className="w-full mt-16 relative">
+        <LocalComments pageId={`lab-${finalId}`.substring(0, 64)} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mt-16 relative">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
 import HomeHero from "../components/HomeHero";
+import ContactButtons from "../components/ContactButtons";
 import { siteConfig } from "../siteConfig";
 import { friendsData } from "../data/friends";
 import { latestAiDailyReport } from "../data/aiDaily";
@@ -112,11 +113,8 @@ export default function Home() {
                 <Link href="/photowall"><strong className="block font-mono text-base text-[#b7646d]">{siteConfig.counts.photos}</strong><span className="text-[8px] text-[#99827c]">照片</span></Link>
               </div>
 
-              <div className="mt-3 flex justify-center gap-2" aria-label="社交与个人链接">
-                <a href={siteConfig.social.github} target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub" className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[#6d5b57] transition hover:-translate-y-0.5 hover:bg-[#493d3a] hover:text-white"><svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.24c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49v-1.91c-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.57 2.34 1.12 2.91.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05A9.32 9.32 0 0112 6.92a9.3 9.3 0 012.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.94-2.35 4.8-4.58 5.06.36.32.68.94.68 1.9v2.82c0 .27.18.59.69.49A10.26 10.26 0 0022 12.24C22 6.58 17.52 2 12 2z" /></svg></a>
-                <Link href="/about" aria-label="关于我" title="关于我" className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[11px] font-bold text-[#8e6666] transition hover:-translate-y-0.5 hover:bg-[#c8787e] hover:text-white">A</Link>
-                <Link href="/friends" aria-label="友链" title="友链" className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[#8e6666] transition hover:-translate-y-0.5 hover:bg-[#c8787e] hover:text-white">∞</Link>
-                <Link href="/messages" aria-label="留言墙" title="留言墙" className="grid h-8 w-8 place-items-center rounded-full bg-white/70 text-[#8e6666] transition hover:-translate-y-0.5 hover:bg-[#c8787e] hover:text-white">✎</Link>
+              <div className="mt-3 flex justify-center" aria-label="联系方式">
+                <ContactButtons variant="chip-rose" className="w-full" exclude={["xhs"]} />
               </div>
             </section>
 

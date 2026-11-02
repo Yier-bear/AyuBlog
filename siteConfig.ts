@@ -30,10 +30,12 @@ export const siteConfig = {
     github: "https://github.com/Yier-bear",
     gitee: "",
     google: "",
-    email: "",
-    qq: "",
-    wechat: "",
+    email: "765752392@qq.com",
+    qq: "765752392",
+    wechat: "ayu_55558",
   },
+  // 小红书名片图（点击小红书按钮弹出）
+  xiaohongshuQrUrl: publicPath("/xhs-qr.jpg"),
   counts: {
     photos: 0,
   },

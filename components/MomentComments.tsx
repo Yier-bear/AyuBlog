@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import 'gitalk/dist/gitalk.css';
 import Gitalk from 'gitalk';
 import { siteConfig } from '../siteConfig';
+import LocalComments from './LocalComments';
 
 interface MomentCommentsProps {
   id: string; // 必须传入说说的专属 ID
@@ -11,9 +12,10 @@ interface MomentCommentsProps {
 
 export default function MomentComments({ id }: MomentCommentsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isConfigured = Boolean(siteConfig.gitalkConfig.clientID && siteConfig.gitalkConfig.repo && siteConfig.gitalkConfig.owner);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isConfigured) return;
 
     // 清空重载，防止 React 严格模式下重复渲染
     containerRef.current.innerHTML = '';
@@ -30,7 +32,12 @@ export default function MomentComments({ id }: MomentCommentsProps) {
     });
 
     gitalk.render(containerRef.current);
-  }, [id]);
+  }, [id, isConfigured]);
+
+  // Gitalk 未配置时启用本地评论区，可直接评论与回复
+  if (!isConfigured) {
+    return <LocalComments pageId={`moment-${id}`.substring(0, 64)} compact placeholder="评论这条说说…" />;
+  }
 
   return (
     <div className="w-full relative">

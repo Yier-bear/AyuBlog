@@ -4,6 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Activity } from 'lucide-react';
 import Comments from './Comments';
+import ContactButtons from './ContactButtons';
 import { siteConfig } from '../siteConfig';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
@@ -210,6 +211,11 @@ export default function AboutClient({
                 `}</style>
                 <div className="about-prose prose prose-slate max-w-none scroll-smooth font-serif leading-relaxed text-[#584a46] transition-colors duration-700 dark:prose-invert" dangerouslySetInnerHTML={{ __html: contentHtml }} />
               </div>
+              <section className="mt-12 rounded-3xl border border-white/60 bg-white/45 p-5 shadow-sm backdrop-blur-md sm:p-6">
+                <p className="mb-4 text-[10px] font-semibold tracking-[.18em] text-[#856d72]">联系方式 · 联系我</p>
+                <ContactButtons variant="chip-rose" />
+                <p className="mt-3 text-[10px] leading-4 text-[#917c76]">GitHub 可直接跳转个人主页；小红书会弹出名片；点击邮箱、QQ、微信即可复制。</p>
+              </section>
               <section className="mt-14 border-t border-[#cfbec0]/55 pt-10"><p className="mb-6 text-[10px] font-semibold tracking-[.18em] text-[#856d72]">一起聊聊</p><Comments /></section>
             </motion.div>
           )}

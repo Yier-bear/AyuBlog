@@ -100,8 +100,8 @@ export default function Home() {
       <PageTransition>
         <HomeHero posts={posts.map(({ slug, title, description }) => ({ slug, title, description }))} />
 
-        <main className="relative z-10 mx-auto -mt-1 grid w-full max-w-6xl gap-4 px-4 pb-4 sm:px-6 xl:grid-cols-[220px_minmax(0,1fr)_238px]">
-          <aside className="space-y-3 xl:sticky xl:top-0 xl:self-start">
+        <main className="ayu-home-main relative z-10 mx-auto -mt-1 grid w-full max-w-6xl gap-4 px-4 pb-4 sm:px-6 xl:grid-cols-[220px_minmax(0,1fr)_238px]">
+          <aside className="ayu-home-profile space-y-3 xl:sticky xl:top-0 xl:self-start" aria-label="博主与内容导航">
             <section className="ayu-glass rounded-[24px] p-4 text-center">
               <img src={siteConfig.avatarUrl} alt="ayu 的头像" className="mx-auto h-18 w-18 rounded-full border-4 border-white/80 object-cover shadow-[0_10px_24px_rgba(120,79,70,.13)]" />
               <h2 className="mt-2.5 text-lg font-black text-[#493d3a]">ayu</h2>
@@ -132,7 +132,7 @@ export default function Home() {
             </section>
           </aside>
 
-          <section className="min-w-0 space-y-4">
+          <section className="ayu-home-feed min-w-0 space-y-4" aria-label="最新内容">
             <section className="ayu-glass rounded-[28px] p-6 sm:p-7">
               <div className="flex items-end justify-between gap-4"><div><p className="ayu-kicker">LATEST ARTICLES</p><h2 className="mt-2 text-2xl font-bold text-[#493d3a]">最新文章</h2></div><Link href="/timeline" className="text-[9px] text-[#ad6069]">全部文章 →</Link></div>
               <div className="mt-5 divide-y divide-dashed divide-[#a9746a]/15">{(posts.length ? posts.slice(0, 3) : [{ slug: "none", title: "第一篇文章正在路上", description: "记录问题、判断和产品实践。", date: "", formattedDate: "SOON", tags: ["AI 产品"], cover: siteConfig.defaultPostCover }]).map((post) => <Link key={post.slug} href={post.slug === "none" ? "/timeline" : `/posts/${post.slug}`} className="group grid gap-4 py-4 sm:grid-cols-[minmax(0,1fr)_132px] sm:items-center"><div className="min-w-0"><h3 className="line-clamp-2 text-sm font-bold leading-6 text-[#493d3a] transition group-hover:text-[#856d72]">{post.title}</h3><p className="mt-1.5 line-clamp-2 text-[10px] leading-5 text-[#8a7771]">{post.description}</p><div className="mt-2.5 flex flex-wrap items-center gap-2 text-[8px] text-[#9b8580]"><time className="font-mono">{post.formattedDate}</time>{post.tags.slice(0, 2).map((tag) => <span key={tag} className={`rounded-full border px-2 py-1 ${getArticleCategoryStyle(tag).chip}`}># {tag}</span>)}</div></div><div className="relative order-first aspect-[16/9] overflow-hidden rounded-2xl bg-[#f1e7e2] sm:order-last"><img src={post.cover} alt={`${post.title}的文章封面`} className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" /><div className="absolute inset-0 bg-gradient-to-tr from-[#e8cdd2]/15 to-transparent" /></div></Link>)}</div>
@@ -154,7 +154,7 @@ export default function Home() {
             </section>
           </section>
 
-          <aside className="space-y-3 xl:sticky xl:top-0 xl:self-start">
+          <aside className="ayu-home-extras space-y-3 xl:sticky xl:top-0 xl:self-start" aria-label="友链与日报">
             <section className="ayu-glass rounded-[24px] p-4">
               <div className="flex items-end justify-between"><div><p className="ayu-kicker">我的友链</p><h2 className="mt-1 text-sm font-bold text-[#493d3a]">我的邻居们</h2></div><Link href="/friends" className="text-[8px] text-[#8d7074]">全部 →</Link></div>
               <div className="mt-3 space-y-1.5">{friendsData.length ? friendsData.slice(0, 4).map((friend) => <a key={friend.id} href={friend.url} target="_blank" rel="noreferrer" className="flex items-center gap-2.5 rounded-xl bg-white/60 p-2.5 transition hover:bg-white/85"><img src={friend.avatar} alt="" className="h-8 w-8 rounded-lg object-cover" /><div className="min-w-0"><strong className="block truncate text-[10px] text-[#493d3a]">{friend.name}</strong><p className="mt-0.5 line-clamp-1 text-[8px] text-[#917c76]">{friend.description}</p></div></a>) : <p className="py-4 text-center text-[9px] text-[#9a847e]">友链正在生长中</p>}</div>

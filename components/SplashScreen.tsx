@@ -7,35 +7,33 @@ import { publicPath } from '../lib/publicPath';
 
 export default function SplashScreen() {
   const [show, setShow] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
   useEffect(() => {
-    setIsMounted(true);
-    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash') === 'true';
+    const desktop = window.matchMedia('(min-width: 768px)');
+    // Mobile visitors see the page immediately, including on their first visit.
+    if (!desktop.matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    if (!hasSeenSplash) {
-      setShow(true);
-      const timer = setTimeout(() => {
-        exitSplash();
-      }, 2200);
-      return () => clearTimeout(timer);
-    } else {
-      // 容错处理：确保直接访问时类名存在
-      document.documentElement.classList.add('splash-seen');
+    try {
+      if (sessionStorage.getItem('hasSeenSplash') === 'true') return;
+    } catch {
+      // The page remains accessible when browser storage is unavailable.
     }
+
+    const frame = window.requestAnimationFrame(() => {
+      if (!desktop.matches) return;
+      setShow(true);
+      try { sessionStorage.setItem('hasSeenSplash', 'true'); } catch { /* Storage is optional. */ }
+    });
+    const timer = window.setTimeout(() => setShow(false), 2200);
+    const onResize = () => {
+      if (!desktop.matches) setShow(false);
+    };
+    desktop.addEventListener('change', onResize);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      desktop.removeEventListener('change', onResize);
+    };
   }, []);
-
-  const exitSplash = () => {
-    setShow(false);
-    sessionStorage.setItem('hasSeenSplash', 'true');
-
-    // 【核心解封】：动画快结束时，给 html 加上类名，CSS 会自动把内容显示出来
-    setTimeout(() => {
-      document.documentElement.classList.add('splash-seen');
-    }, 500);
-  };
-
-  if (!isMounted) return null;
 
   return (
     <AnimatePresence>
@@ -44,7 +42,7 @@ export default function SplashScreen() {
           key="splash-screen-container"
           exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[100000] flex flex-col items-center justify-center overflow-hidden bg-[#f9ede7]"
+          className="ayu-splash fixed inset-0 z-[100000] hidden flex-col items-center justify-center overflow-hidden bg-[#f9ede7] md:flex"
         >
           <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url('${publicPath("/ayu-home-bg.jpg")}')` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-[#f4d4d2]/85 via-[#fbefd9]/90 to-[#e8ecdf]/85 backdrop-blur-xl" />

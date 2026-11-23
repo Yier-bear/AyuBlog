@@ -7,6 +7,7 @@ import PageTransition from "../components/PageTransition";
 import HomeHero from "../components/HomeHero";
 import ContactButtons from "../components/ContactButtons";
 import { siteConfig } from "../siteConfig";
+import { publicPath } from "../lib/publicPath";
 import { friendsData } from "../data/friends";
 import { latestAiDailyReport } from "../data/aiDaily";
 import { getArticleCategoryStyle, normalizeArticleCategories } from "../components/articleCategories";
@@ -60,7 +61,7 @@ function readEntries(folder: string): Entry[] {
       date,
       formattedDate: formatDate(date),
       tags: folder === "posts" ? normalizeArticleCategories(data.tags) : (Array.isArray(data.tags) ? data.tags.map(String) : []),
-      cover: String(data.cover || extractFirstImage(content) || siteConfig.defaultPostCover),
+      cover: publicPath(String(data.cover || extractFirstImage(content) || siteConfig.defaultPostCover)),
     };
   }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }

@@ -31,3 +31,69 @@ body .prose a{color:var(--ayu-blue)!important;border-bottom-color:#9fb2bb!import
 .claw-article{color:#5f514d;font-size:13px;line-height:1.9;overflow-wrap:anywhere}.claw-article>:first-child{margin-top:0!important}.claw-article h1,.claw-article h2,.claw-article h3{color:#493d3a;font-weight:600;line-height:1.4;margin:1.25rem 0 .5rem}.claw-article h1{font-size:16px}.claw-article h2{font-size:15px}.claw-article h3{font-size:14px}.claw-article p{margin:0 0 .75rem}.claw-article strong{color:#493d3a;font-weight:700}.claw-article a{color:#856d72;border-bottom:1px solid #cfbec0;text-decoration:none}.claw-article ul,.claw-article ol{margin:.75rem 0;padding-left:1.4rem}.claw-article ul{list-style:disc}.claw-article ol{list-style:decimal}.claw-article li{margin:.35rem 0}.claw-article li::marker{color:#b77a80}.claw-article blockquote{margin:1rem 0;border-left:3px solid #c58f94;background:#f8eee5;padding:.75rem 1rem;color:#705f59}.claw-article blockquote p{margin:0}.claw-article pre{margin:1rem 0;overflow-x:auto;border-radius:8px;background:#282c34!important;padding:1rem}.claw-article pre code{background:transparent!important;padding:0!important;color:inherit!important;font-family:var(--font-geist-mono),monospace;font-size:12px;line-height:1.7}.claw-article code:before,.claw-article code:after{content:none}.claw-article p code,.claw-article li code{border-radius:4px;background:#f0e7e2;padding:.1rem .3rem;color:#80626a;font-family:var(--font-geist-mono),monospace;font-size:.86em}.claw-article table{display:block;width:100%;margin:1rem 0;overflow-x:auto;border-collapse:collapse;font-size:12px}.claw-article th,.claw-article td{border:1px solid #e2d2cb;padding:.5rem .65rem;text-align:left}.claw-article th{background:#f8eee5;color:#493d3a}.claw-article img{display:block;max-width:100%;height:auto;margin:.5rem 0;border-radius:8px;transition:transform .3s ease}.claw-article img:hover{transform:scale(1.02)}.claw-article hr{margin:1.5rem 0;border:0;border-top:1px solid #dfcdc7}.claw-article .katex-display{overflow-x:auto;overflow-y:hidden;padding:.5rem 0}
 @media(max-width:768px){.ayu-page-heading{padding-inline:.5rem}.about-prose.prose h1{font-size:1.65rem!important}.about-prose.prose h2{margin-top:2.5rem!important;font-size:1.2rem!important}.ayu-blob{filter:blur(65px)}.ayu-orbit{opacity:.45}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Keep server-rendered content visible while the browser loads JavaScript. */
+@keyframes ayu-page-enter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .ayu-page-transition { animation: ayu-page-enter .8s ease-out; }
+}
+
+@media (max-width: 767px) {
+  .ayu-navbar {
+    top: max(.75rem, env(safe-area-inset-top));
+    translate: -50% 0;
+    transform: none;
+  }
+  .ayu-mobile-navigation {
+    top: calc(max(.75rem, env(safe-area-inset-top)) + 4rem);
+    max-height: calc(100dvh - max(.75rem, env(safe-area-inset-top)) - 5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .ayu-splash { display: none !important; }
+  .ayu-page-transition { opacity: 1; transform: none; }
+  .ayu-home-cover { min-height: clamp(360px, 60svh, 480px); }
+  .ayu-home-cover .ayu-cover-title {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+    line-height: 1.25;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .ayu-home-cover .ayu-cover-copy {
+    white-space: normal;
+    font-size: clamp(.75rem, 3.4vw, 1rem);
+    letter-spacing: .04em;
+    line-height: 1.65;
+  }
+  .ayu-home-cover input { font-size: 16px; padding-left: 2.5rem; padding-right: 5rem; }
+  .ayu-home-cover button { min-width: 56px; min-height: 44px; font-size: 13px; }
+  .ayu-home-main { gap: 1rem; padding-inline: 1rem; }
+  .ayu-home-main > * { min-width: 0; }
+  .ayu-home-feed { order: -1; }
+  .ayu-home-main .ayu-glass { border-radius: 22px; padding: 1.25rem; }
+  .ayu-home-main h2 { font-size: 1.25rem; }
+  .ayu-home-main h3 { font-size: 1rem; line-height: 1.7; overflow-wrap: anywhere; }
+  .ayu-home-main p:not(.ayu-kicker) { font-size: 14px; line-height: 1.8; }
+  .ayu-home-main :is([class~="text-[7px]"], [class~="text-[8px]"], [class~="text-[9px]"], [class~="text-[10px]"]) {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  .ayu-home-main .ayu-kicker { font-size: 10px; }
+  .ayu-home-main a { overflow-wrap: anywhere; }
+  .ayu-home-main a > time { align-self: flex-start; padding-top: .3rem; }
+  .ayu-home-main .ayu-glass > div:first-child > a { flex-shrink: 0; min-height: 44px; display: inline-flex; align-items: center; }
+  .ayu-home-profile nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ayu-home-profile nav a { display: flex; align-items: center; justify-content: center; min-height: 44px; padding-inline: .25rem; }
+  .ayu-home-profile [aria-label="联系方式"] :is(a, button) { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+  .ayu-home-extras a { min-height: 44px; }
+  .ayu-site footer { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); font-size: 11px; line-height: 1.8; }
+  .ayu-ambient { background-attachment: scroll; }
+  .ayu-wave, .ayu-ambient:before, .ayu-cover-transition:after { animation: none; }
+}
